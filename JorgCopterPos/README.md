@@ -1,0 +1,3 @@
+# JorgCopter
+Selfmade C++ Code for an Arduino based Quadcopter with Position Tracking
+- in development...
