@@ -45,6 +45,10 @@ struct tSensor
 class cImu
 {
 public:
+    cImu():isPosVelValid(false)
+    {
+
+    }
     void begin();
     void update();
     bool isValid();
@@ -57,7 +61,11 @@ public:
     cQuaternion Q;
     cQuaternion Q_IIz;
     cQuaternion Q_IzB;
-    
+
+    float position[3];
+    float velocitty[3];
+    bool isPosVelValid;
+
     float dt;
     cQuaternion q_bs;
     void readData();
