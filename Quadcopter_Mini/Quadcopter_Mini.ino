@@ -186,7 +186,7 @@ void safe_mode()
         bool start_cmd_received = false;
         long blink_t = millis();
         DDRB |= (1<<PB5);
-
+        int blink_time_ms = 20;
         while(!start_cmd_received)
           {
             Esp.getCommand(command);
@@ -200,18 +200,26 @@ void safe_mode()
             Imu.calibrate(false);
             
             
-            if (millis()-blink_t <= 20)
+            if (millis()-blink_t <= blink_time_ms)
             {
             PORTB |= (1<<PB5);
             }
             
-            if (millis()-blink_t > 20)
+            if (millis()-blink_t > blink_time_ms)
             PORTB &= ~(1<<PB5);
       
             if (millis()-blink_t >= 700)
             blink_t = millis();
             
             Imu.update();
+            if (Imu.isGpsValid)
+            {
+              blink_time_ms = 50;
+            }
+            else
+            {
+              blink_time_ms = 20;
+            }
           }
           PORTB &= ~(1<<PB5);
           blink(1);
