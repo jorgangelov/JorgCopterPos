@@ -1,12 +1,13 @@
 #ifndef COMM_H
 #define COMM_H
 
-#define UART_BAUD 9600
+#define UART_BAUD 115200
+#define TIMEOUT_MS 2
 
 #include <Arduino.h>
-#include "SoftwareSerial.h"
 
 void blink(int n);
+void fastblink(int n);
 
 
 
@@ -27,7 +28,7 @@ public:
     void show();
     void sendFloat(float f, char terminator = '\r');
     void sendPseudoFloat(float f, char terminator = '\r');
-
+    void flushBuffer();
     int bytes;
 };
 
@@ -35,22 +36,20 @@ public:
  class cESP
  {
   public:
-  void begin(int RX=8, int TX=9, long baud=9600);
+  void begin(long baud=115200);
+  bool isValid();
   void createAP();
   void setupAP();
   bool isConnected();
+  void sendData(uint8_t *data_pt, uint8_t data_size);
 
-
-   
+  void flushBuffer();
   uint32_t getData(char *buffer);
   uint32_t getPayload(char *buffer);
   bool getCommand(tCommand &command);
    
-  void display();
    
    
-  SoftwareSerial *swSerial;
-  bool detail;
    
    
  };

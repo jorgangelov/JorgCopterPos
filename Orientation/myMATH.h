@@ -49,7 +49,7 @@ public:
 cQuaternion operator-(cQuaternion q1, cQuaternion q2);
 cQuaternion operator*(float f, cQuaternion q);
 
-// -------------------------------------------------------------------------- Definitions
+// Definitions
 template <uint8_t dim> inline float& cVector<dim>::operator()(uint8_t _i)
 {
   return entries[_i-1];

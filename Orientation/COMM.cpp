@@ -3,150 +3,153 @@
 
 void cSerial::begin(long baud)
 {
-    Serial.begin(baud);
+  Serial.begin(baud);
 }
 
 
 int cSerial::available()
 {
-    return Serial.available();
+  return Serial.available();
 }
 
 
 int cSerial::getData(char *data)
 {
-    if (this->available())
-            {
-            delay(50);
-            bytes = 0;
-            while (this->available())
-                {
-                data[bytes] = Serial.read();
-                bytes++;
-                }
-            return bytes;
-            }
-return 0;
+  if (this->available())
+  {
+    bytes = 0;
+    bool TimedOut = false;
+    unsigned long startTime;
+    while ( !TimedOut )
+    {
+      if (available())
+      {
+        data[bytes] = Serial.read();
+        bytes++;
+        startTime = millis();
+      }
+      if ( ( millis() - startTime) > TIMEOUT_MS)
+      {
+        TimedOut = true;
+      }
+    }
+    return bytes;
+  }
+  return 0;
 }
 
 
 void cSerial::show()
 {
-    if (this->available())
-        {
-        char *data = new char [this->available()];
-        bytes = this->available();
-        this->getData(data);
-        data[bytes] = '\0';
-        Serial.println(data);
-        }
+  if (this->available())
+  {
+    char* data = new char [this->available()];
+    bytes = this->available();
+    this->getData(data);
+    data[bytes] = '\0';
+    Serial.println(data);
+    delete data;
+  }
 }
 
 
 void cSerial::sendFloat(float f, char terminator)
 {
-    char *bytept = (char*)&f;
-    Serial.write(*bytept);
-    Serial.write(*(bytept+1));
-    Serial.write(*(bytept+2));
-    Serial.write(*(bytept+3));
-    if (terminator != 0)
+  char *bytept = (char*)&f;
+  Serial.write(*bytept);
+  Serial.write(*(bytept + 1));
+  Serial.write(*(bytept + 2));
+  Serial.write(*(bytept + 3));
+  if (terminator != 0)
     Serial.print(terminator);
 }
 
 
 void cSerial::sendPseudoFloat(float f, char terminator)
 {
-    Serial.write((int8_t)(f*128.0));
+  Serial.write((int8_t)(f * 128.0));
 
-    if (terminator != 0)
+  if (terminator != 0)
     Serial.print(terminator);
 }
 
 
-
-
-void cESP::begin(int RX, int TX, long baud)
+void cSerial::flushBuffer()
 {
-
-    detail = false;
-    
-    if (detail)
-    Serial.begin(9600);
-
-    swSerial = new SoftwareSerial(RX,TX);
-    swSerial->begin(baud);
-    swSerial->println("AT+RST");
-
-    
-    if (detail)
-    display();
-
-    delay(3000);
-/*
-     swSerial->println("AT+CIOBAUD=9600");
-     if (detail)
-     display();
-     swSerial->begin(9600);
-     if (detail)
-     display();
-
-*/
-    
-    swSerial->flush();
-
-
-
-}
-
-
-
-uint32_t cESP::getData(char *buffer)
-{
-  int i =0;
-   if (swSerial->available())
-  {     
-      while(swSerial->available())
-      {
-        buffer[i] = swSerial->read();
-        i = i+1;
-      }
+  while (Serial.available())
+  {
+    Serial.read();
   }
-  
-  return i;  
-  
 }
 
 
-
-void cESP::display()
+void cESP::begin(long baud)
 {
-char buffer[1000];  
-delay(100);
 
-uint32_t len = this->getData(buffer);
-if (len > 0)
+
+  Serial.begin(baud);
+  flushBuffer();
+  Serial.println("AT+RST");
+  delay(5000);
+  //Serial.println("AT+CIOBAUD=115200");
+
+  /*
+       swSerial->println("AT+CIOBAUD=9600");
+       if (detail)
+       display();
+       swSerial->begin(9600);
+       if (detail)
+       display();
+
+  */
+
+
+
+
+}
+
+
+
+
+void cESP::flushBuffer()
 {
-buffer[len] = '\0';
-Serial.println(buffer);
+  while (Serial.available())
+  {
+    Serial.read();
+  }
+}
+
+uint32_t cESP::getData(char *mybuffer)
+{
+  int i = 0;
+  if (Serial.available())
+  {
+    while (Serial.available())
+    {
+      mybuffer[i] = Serial.read();
+      i = i + 1;
+    }
+  }
+
+  return i;
+
 }
 
 
-}
+
+
 
 
 
 void cESP::createAP()
 {
-  
-swSerial->println("AT+CWMODE=3");
-delay(500);  
-if (detail)
-display();
-swSerial->println("AT+CWSAP=\"JORG_QUAD\",\"bebosbebos\",5,3");
-delay(500);
-if (detail)
-display();
+
+  Serial.println("AT+CWMODE=3");
+  delay(1000);
+
+  Serial.println("AT+CWSAP=\"JORG_QUADCOPTER\",\"bebosbebos\",5,3");
+  delay(1000);
+  flushBuffer();
 
 }
 
@@ -154,20 +157,20 @@ void cESP::setupAP()
 {
 
 
-//black
-//////////////////////
-/*
-swSerial->println("AT+CIPMUX=0");
-if (detail)
-display();
-delay(300);
-swSerial->println("AT+CIPSTART=\"UDP\",\"0\",0,1337,2");
-if (detail)
-display();
-delay(300);
-swSerial->flush();
-*/
-/////////////////
+  //black
+  //////////////////////
+  /*
+    swSerial->println("AT+CIPMUX=0");
+    if (detail)
+    display();
+    delay(300);
+    swSerial->println("AT+CIPSTART=\"UDP\",\"0\",0,1337,2");
+    if (detail)
+    display();
+    delay(300);
+    swSerial->flush();
+  */
+  /////////////////
 
 
 
@@ -177,39 +180,60 @@ swSerial->flush();
 
 
 
-//blue
-//////////////////////
-swSerial->println("AT+CIPMUX=1");
-if (detail)
-display();
-delay(1000);
-swSerial->println("AT+CIPSERVER=1,1337");
-if (detail)
-display();
-delay(1000);
-swSerial->flush();
-/////////////////
+  //blue
+  //////////////////////
+  Serial.println("AT+CIPMUX=1");
+  delay(400);
+  Serial.println("AT+CIPSERVER=1,1337");
+  delay(400);
+  Serial.println("AT+CIPSTART=1,\"UDP\",\"192.168.4.100\",1338");
+  flushBuffer();
+  /////////////////
 
 }
+
+void cESP::sendData(uint8_t *data_pt, uint8_t data_size)
+{
+  char line[50];
+  sprintf(line, "AT+CIPSEND=1,%u", data_size);
+  Serial.println(line);
+  Serial.write(data_pt, data_size);
+}
+
 
 
 bool cESP::isConnected()
 {
-swSerial->flush();  
-swSerial->println("AT+CWLIF");
-delay(50);
-char buffer[100];  
-uint32_t len = this->getData(buffer);
-if (len > 20)
+  flushBuffer();
+  Serial.println("AT+CWLIF");
+  delay(50);
+  char mybuffer[100];
+  uint32_t len = getData(mybuffer);
+  if (len > 30)
   {
     return true;
   }
-else
+  else
   {
     return false;
   }
 
 
+}
+
+
+bool cESP::isValid()
+{
+  char mybuffer[100];
+  uint32_t len = getData(mybuffer);
+  if (len > 30)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 
@@ -218,24 +242,24 @@ uint32_t cESP::getPayload(char *buffer)
 {
   bool start_received = false;
 
-  
-  while (swSerial->available() > 6 && start_received != true)
+
+  while (Serial.available() > 6 && start_received != true)
   {
-    if (swSerial->read() == ':')
+    if (Serial.read() == ':')
     {
       start_received = true;
     }
-    
+
   }
 
 
-  
+
   if (start_received == true)
   {
     int i;
-    for (i=0; i<6; i++)
+    for (i = 0; i < 6; i++)
     {
-    buffer[i] = swSerial->read();
+      buffer[i] = Serial.read();
     }
     return i;
   }
@@ -244,40 +268,39 @@ uint32_t cESP::getPayload(char *buffer)
   {
     return 0;
   }
-  
 
 
-    
-  
+
+
+
 }
 
 
 
 bool cESP::getCommand(tCommand &command)
 {
-  char payload[50];
-  int len = this->getPayload(payload);
+  char payload[6];
+  int len = getPayload(payload);
   if (len == 6)
   {
-    if(payload[0] == 126 && payload[5] == 127)
+    if (payload[0] == 126 && payload[5] == 127)
     {
       command.q_BI_x = payload[1];
       command.q_BI_y = payload[2];
       command.r = payload[3];
       command.T = payload[4];
-      swSerial->flush(); 
       return true;
     }
     else
     {
-      return false; 
+      return false;
     }
   }
   else
   {
     return false;
   }
-  
+
 }
 
 
@@ -288,14 +311,29 @@ bool cESP::getCommand(tCommand &command)
 
 void blink(int n)
 {
-  DDRB |= (1<<PB5);
+  DDRB |= (1 << PB5);
 
 
-for (int i=0;i<n;i++)
+  for (int i = 0; i < n; i++)
   {
-  PORTB |= (1<<PB5);
-  delay(200);
-  PORTB &= ~(1<<PB5);
-  delay(200);
+    PORTB |= (1 << PB5);
+    delay(200);
+    PORTB &= ~(1 << PB5);
+    delay(200);
+  }
+}
+
+
+void fastblink(int n)
+{
+  DDRB |= (1 << PB5);
+
+
+  for (int i = 0; i < n; i++)
+  {
+    PORTB |= (1 << PB5);
+    delay(100);
+    PORTB &= ~(1 << PB5);
+    delay(100);
   }
 }
