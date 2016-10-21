@@ -131,6 +131,14 @@ void cImu::readData()
     data.my = my;
     data.mz = mz;
     }
+
+
+  Wire.beginTransmission(42);
+  Wire.requestFrom(42, sizeof(position_est) + sizeof(velocitty_est) + sizeof(isGpsValid));
+  
+  Wire.readBytes((uint8_t*)&position_est,sizeof(position_est));
+  Wire.readBytes((uint8_t*)&velocitty_est,sizeof(velocitty_est));
+  Wire.readBytes((uint8_t*)&isGpsValid,sizeof(isGpsValid));
     
 }
 

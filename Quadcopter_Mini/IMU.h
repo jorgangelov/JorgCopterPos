@@ -45,7 +45,7 @@ struct tSensor
 class cImu
 {
 public:
-    cImu():isPosVelValid(false)
+    cImu():isGpsValid(false)
     {
 
     }
@@ -62,9 +62,9 @@ public:
     cQuaternion Q_IIz;
     cQuaternion Q_IzB;
 
-    float position[3];
-    float velocitty[3];
-    bool isPosVelValid;
+    float position_est[3];
+    float velocitty_est[3];
+    bool isGpsValid;
 
     float dt;
     cQuaternion q_bs;
