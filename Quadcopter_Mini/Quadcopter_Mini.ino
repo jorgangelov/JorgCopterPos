@@ -212,7 +212,7 @@ void safe_mode()
             blink_t = millis();
             
             Imu.update();
-            if (Imu.isGpsValid)
+            if (Imu.gps_package.isGPSvalid)
             {
               blink_time_ms = 50;
             }

@@ -12,6 +12,20 @@ void blink(int n);
 
 
 
+struct I2C_GPS_Package
+{
+I2C_GPS_Package():isGPSvalid(false)
+  {
+
+  }
+
+float delta_NED[3];
+float delta_UVW[3];
+bool isGPSvalid;
+};
+
+
+
 struct tSensor
 {
   tSensor()
@@ -45,10 +59,6 @@ struct tSensor
 class cImu
 {
 public:
-    cImu():isGpsValid(false)
-    {
-
-    }
     void begin();
     void update();
     bool isValid();
@@ -62,9 +72,8 @@ public:
     cQuaternion Q_IIz;
     cQuaternion Q_IzB;
 
-    float position_est[3];
-    float velocitty_est[3];
-    bool isGpsValid;
+    I2C_GPS_Package gps_package;
+
 
     float dt;
     cQuaternion q_bs;
