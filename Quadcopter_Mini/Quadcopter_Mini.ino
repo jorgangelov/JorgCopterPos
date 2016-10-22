@@ -2,6 +2,7 @@
 
 
 int operation_mode = 1;
+bool gps_global_flag = false;
 
 
 cSerial Uart;
@@ -103,6 +104,13 @@ Imu.update();
 //Process Command
 process_command();
 
+if (gps_global_flag == true) // Override the Pilot Command
+  {
+    static float T_int = 0;
+    T_int += Imu.dt;
+    command.T = T_int -110;
+  }
+
 // Calculate the Pseudo Control 
 Controller.calculatePseudoControl(&Imu,&command);
 
@@ -161,6 +169,12 @@ if ( Esp.getCommand(command))
   
       }
       /////////////////////////////////////////////////// OFF Command received
+      if (command.r <= -50)
+      {
+        gps_global_flag = false;
+      }
+    
+      
   }
 // ...check if too much time has passed  
 else
@@ -172,6 +186,7 @@ else
         command.q_BI_x = 0 ;
         command.q_BI_x = 0 ;
         command.T = -110;
+        gps_global_flag = false;
       }
     
   }
@@ -198,7 +213,9 @@ void safe_mode()
 
             if (command.q_BI_y >= 100 && command.r <= -100) // left UP + right UP
             Imu.calibrate(false);
-            
+
+            if (command.T >= 100)     // Right TRIGGER 
+            set_gps_flag();
             
             if (millis()-blink_t <= blink_time_ms)
             {
@@ -215,6 +232,7 @@ void safe_mode()
             if (Imu.gps_package.isGPSvalid)
             {
               blink_time_ms = 150;
+              Imu.gps_package_from_ground = Imu.gps_package;
             }
             else
             {
@@ -224,5 +242,43 @@ void safe_mode()
           PORTB &= ~(1<<PB5);
           blink(1);
         // Start Routine
+}
+
+
+
+
+void set_gps_flag()
+{
+  bool flag_to_set;
+  if (Imu.gps_package.isGPSvalid)
+  {
+    if (gps_global_flag == false)
+    {
+      flag_to_set = true;
+      fastblink(5);
+      command.T = 0;
+      Uart.flushBuffer();
+      delay(300);
+    }
+    
+    if (gps_global_flag == true)
+    {
+      flag_to_set = false;
+      fastblink(3);
+      command.T = 0;
+      Uart.flushBuffer();
+      delay(300);
+    }
+  }
+  else
+  {
+      flag_to_set = false;
+      fastblink(3);
+      command.T = 0;
+      Uart.flushBuffer();      
+      delay(300);
+  }
+  gps_global_flag = flag_to_set;
+  
 }
 

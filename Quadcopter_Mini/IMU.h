@@ -72,7 +72,7 @@ public:
     cQuaternion Q_IIz;
     cQuaternion Q_IzB;
 
-    I2C_GPS_Package gps_package;
+    I2C_GPS_Package gps_package,gps_package_from_ground;
 
 
     float dt;
