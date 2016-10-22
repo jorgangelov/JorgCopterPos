@@ -18,6 +18,7 @@ public:
   cVector<dim> operator+(cVector<dim> _other);
   cVector<dim> operator*(float _f);
   float entries[dim];
+  float norm();
 
 };
 
@@ -103,6 +104,16 @@ template <uint8_t dim> inline cVector<dim> operator-(cVector<dim> v1, cVector<di
 }
 
 
+template <uint8_t dim> inline float cVector<dim>::norm()
+{
+  float mynorm = 0;
+  for (uint8_t i=0; i<dim; i++)
+  {
+    mynorm += entries[i]*entries[i];
+  }
+  return sqrt(mynorm);
+}
+
 
 
 inline cQuaternion cQuaternion::operator+(cQuaternion Q)
@@ -177,6 +188,7 @@ inline cQuaternion operator*(float f, cQuaternion q)
 {
     return q*f;
 }
+
 
 
 #endif

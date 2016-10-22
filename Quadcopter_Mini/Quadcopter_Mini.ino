@@ -106,9 +106,7 @@ process_command();
 
 if (gps_global_flag == true) // Override the Pilot Command
   {
-    static float T_int = 0;
-    T_int += Imu.dt;
-    command.T = T_int -110;
+    override_pilot_command();
   }
 
 // Calculate the Pseudo Control 
@@ -281,4 +279,12 @@ void set_gps_flag()
   gps_global_flag = flag_to_set;
   
 }
+
+
+
+void override_pilot_command()
+{
+  
+}
+
 
