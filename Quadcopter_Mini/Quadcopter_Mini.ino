@@ -214,7 +214,7 @@ void safe_mode()
             Imu.update();
             if (Imu.gps_package.isGPSvalid)
             {
-              blink_time_ms = 50;
+              blink_time_ms = 150;
             }
             else
             {
