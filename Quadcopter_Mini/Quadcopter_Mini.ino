@@ -128,7 +128,11 @@ void loop()
     if (i >= 1000)
     {
       mean_dt /= i;
-      Serial.println(mean_dt, 5);
+      Serial.print(mean_dt, 5);
+      Serial.print(" ");
+      Serial.print(Imu.gps_package.isGPSvalid == true ? "Valid" : "INValid");      
+      Serial.print(" ");
+      Serial.println(gps_global_flag == true ? "POS" : "NOTPOS");      
       mean_dt = 0;
       i = 0;
     }
