@@ -293,7 +293,7 @@ void set_gps_flag()
 void override_pilot_command()
 {
   cVector<3> t, x, xdot, x_cmd;
-  float Kd = 4, Kp = 4;
+  float Kd = 1, Kp = 5;
   tCommand command_to_send;
 
   x(1) = Imu.gps_package.delta_NED[0] - Imu.gps_package_from_ground.delta_NED[0];
@@ -307,18 +307,18 @@ void override_pilot_command()
   // Hover 3m above ground
   x_cmd(1) = Imu.gps_package_from_ground.delta_NED[0];
   x_cmd(2) = Imu.gps_package_from_ground.delta_NED[1];
-  x_cmd(3) = Imu.gps_package_from_ground.delta_NED[2] + 2;
+  x_cmd(3) = Imu.gps_package_from_ground.delta_NED[2] + 5;
 
   t = -Kd*xdot - Kp*(x-x_cmd);
 
-  t(3) += 100;
+  t(3) += 110;
   
   if ( t(3) < 0)
   t(3) = 0;
 
   command_to_send.T = t.norm() - 110;
-  command_to_send.q_BI_x = t(2)*(-10);
-  command_to_send.q_BI_y = t(1)*(10);
+  command_to_send.q_BI_x = t(2)*(-1);
+  command_to_send.q_BI_y = t(1)*(1);
   
   
   // Limits for the commands

@@ -99,7 +99,7 @@ cQuaternion q_e(1,0,0,0);
 
 // Gains
 float I_enable = 1;
-float Kp=175, Kd=40, KI=40, Kdd = 2.5;
+float Kp=175, Kd=40, KI=40, Kdd = 3.2;
 // Gains
 float wdot[3], T;
 const int8_t I_TH = 0;
