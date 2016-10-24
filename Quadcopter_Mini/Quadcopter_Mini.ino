@@ -10,6 +10,7 @@ cSerial Uart;
 cImu Imu;
 cController Controller;
 cESP Esp;
+float automatic_lift_I = 0;
 
 tCommand command = {0, 0, 0, 0};
 
@@ -128,11 +129,7 @@ void loop()
     if (i >= 1000)
     {
       mean_dt /= i;
-      Serial.print(mean_dt, 5);
-      Serial.print(" ");
-      Serial.print(Imu.gps_package.isGPSvalid == true ? "Valid" : "INValid");      
-      Serial.print(" ");
-      Serial.println(gps_global_flag == true ? "POS" : "NOTPOS");      
+      Serial.print(mean_dt, 5);    
       mean_dt = 0;
       i = 0;
     }
@@ -158,6 +155,13 @@ void process_command()
   {
     time_wo_command = 0;
     PORTB &= ~(1 << PB5);
+    
+    if (command.r <= -50)
+    {
+      gps_global_flag = false;
+      automatic_lift_I = 0;
+    }
+
     /////////////////////////////////////////////////// OFF Command received
     if (command.T <= -100 && command.r <= -100)
     {
@@ -175,10 +179,7 @@ void process_command()
 
     }
     /////////////////////////////////////////////////// OFF Command received
-    if (command.r <= -50)
-    {
-      gps_global_flag = false;
-    }
+
 
 
   }
@@ -293,7 +294,7 @@ void set_gps_flag()
 void override_pilot_command()
 {
   cVector<3> t, x, xdot, x_cmd;
-  float Kd = 1, Kp = 5;
+  float Kd = 3, Kp = 5 , KI=5;
   tCommand command_to_send;
 
   x(1) = Imu.gps_package.delta_NED[0] - Imu.gps_package_from_ground.delta_NED[0];
@@ -307,18 +308,22 @@ void override_pilot_command()
   // Hover 3m above ground
   x_cmd(1) = Imu.gps_package_from_ground.delta_NED[0];
   x_cmd(2) = Imu.gps_package_from_ground.delta_NED[1];
-  x_cmd(3) = Imu.gps_package_from_ground.delta_NED[2] + 5;
+  x_cmd(3) = Imu.gps_package_from_ground.delta_NED[2] + 3;
 
   t = -Kd*xdot - Kp*(x-x_cmd);
-
-  t(3) += 110;
+  automatic_lift_I += Imu.dt*KI*( x_cmd(3) -  x(3) );
+  
+  t(3) += automatic_lift_I;
   
   if ( t(3) < 0)
   t(3) = 0;
-
-  command_to_send.T = t.norm() - 110;
-  command_to_send.q_BI_x = t(2)*(-1);
-  command_to_send.q_BI_y = t(1)*(1);
+  float t_norm = t.norm();
+  if (t_norm < 0.01)
+  t_norm = 0.01;
+  
+  command_to_send.T = t_norm - 110;
+  command_to_send.q_BI_x = (t(2)/t_norm)*(-50);
+  command_to_send.q_BI_y = (t(1)/t_norm)*(50);
   
   
   // Limits for the commands
