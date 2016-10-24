@@ -322,9 +322,11 @@ void override_pilot_command()
   t_norm = 0.01;
   
   command_to_send.T = t_norm - 110;
+  if(t_norm >= 50)
+  {
   command_to_send.q_BI_x = (t(2)/t_norm)*(-50);
   command_to_send.q_BI_y = (t(1)/t_norm)*(50);
-  
+  }
   
   // Limits for the commands
   if (command_to_send.T >= UPPER_LIMIT_THRUST_CMD || command_to_send.T < LOWER_LIMIT_THRUST_CMD)
