@@ -308,7 +308,7 @@ void override_pilot_command()
   // Hover 3m above ground
   x_cmd(1) = Imu.gps_package_from_ground.delta_NED[0];
   x_cmd(2) = Imu.gps_package_from_ground.delta_NED[1];
-  x_cmd(3) = Imu.gps_package_from_ground.delta_NED[2] + 3;
+  x_cmd(3) = Imu.gps_package_from_ground.delta_NED[2] + 4;
 
   t = -Kd*xdot - Kp*(x-x_cmd);
   automatic_lift_I += Imu.dt*KI*( x_cmd(3) -  x(3) );
@@ -322,11 +322,10 @@ void override_pilot_command()
   t_norm = 0.01;
   
   command_to_send.T = t_norm - 110;
-  if(t_norm >= 50)
-  {
-  command_to_send.q_BI_x = (t(2)/t_norm)*(-50);
-  command_to_send.q_BI_y = (t(1)/t_norm)*(50);
-  }
+  
+  command_to_send.q_BI_x = (t(2))*(-5);
+  command_to_send.q_BI_y = (t(1))*(5);
+  
   
   // Limits for the commands
   if (command_to_send.T >= UPPER_LIMIT_THRUST_CMD || command_to_send.T < LOWER_LIMIT_THRUST_CMD)
