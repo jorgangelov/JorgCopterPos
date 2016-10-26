@@ -198,27 +198,22 @@ void cImu::update()
     
 
     // Prediction
-    cQuaternion w_bar(0,0,0,0), q_u;
+    cQuaternion w_bar(0,data.wx,data.wy,data.wz), q_u;
 
-    w_bar(2) = data.wx;
-    w_bar(3) = data.wy;
-    w_bar(4) = data.wz;
 
 
         
     
     // Update ACC
     cQuaternion w_delta(0,0,0,0);
-    float ax = data.ax,ay = data.ay,az = data.az,a,m1,m2,m3, Kp = 0.1, KI=0.0025;
+    float ax = data.ax,ay = data.ay,az = data.az,a, Kp = 0.1, KI=0.0025;
     a = sqrt(ax*ax+ay*ay+az*az);
     if (a > 1 && a < 20)
     {
-    m1 = ax/a;
-    m2 = ay/a;
-    m3 = az/a;
+
       
     
-    cQuaternion s_b(0,-m1,-m2,-m3), g_i(0,0,0,1), g_b(0,2*Q(4)*Q(2)-2*Q(3)*Q(1),2*Q(4)*Q(3)+2*Q(2)*Q(1),1-2*Q(3)*Q(3)-2*Q(2)*Q(2));
+    cQuaternion s_b(0,-ax/a,-ay/a,-az/a), g_i(0,0,0,1), g_b(0,2*Q(4)*Q(2)-2*Q(3)*Q(1),2*Q(4)*Q(3)+2*Q(2)*Q(1),1-2*Q(3)*Q(3)-2*Q(2)*Q(2));
     w_delta = s_b*g_b;
     w_delta_I = w_delta_I + w_delta*dt;
     
@@ -230,10 +225,10 @@ void cImu::update()
     cQuaternion w_delta_magn(0,0,0,0);
 
     
-    float mx = data.mx,my = data.my,mz = data.mz, Kpm = 0.01;
+    float Kpm = 0.01;
     
     cQuaternion q_cross(0,0,0,0);
-	  q_cross(4) = (-2*Q(2)*Q(3) -2*Q(1)*Q(4))*mx - (Q(1)*Q(1) -Q(2)*Q(2) +Q(3)*Q(3) - Q(4)*Q(4))*my + (-2*Q(3)*Q(4) -2*Q(1)*Q(2))*mz;
+	  q_cross(4) = (-2*Q(2)*Q(3) -2*Q(1)*Q(4))*data.mx - (Q(1)*Q(1) -Q(2)*Q(2) +Q(3)*Q(3) - Q(4)*Q(4))*data.my + (-2*Q(3)*Q(4) -2*Q(1)*Q(2))*data.mz;
     w_delta_magn = Q.conjugated()*q_cross*Q;
   
 
@@ -246,14 +241,14 @@ void cImu::update()
     
   
     
-    
+    /*
     Q_IIz(1) = Q(1)/(Q(1)*Q(1)+Q(4)*Q(4));
     Q_IIz(2) = 0;
     Q_IIz(3) = 0;
     Q_IIz(4) = Q(4)/(Q(1)*Q(1)+Q(4)*Q(4));
 
     Q_IzB = Q_IIz.conjugated()*Q;  
-    
+    */
   }
 
 
