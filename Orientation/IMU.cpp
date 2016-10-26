@@ -227,12 +227,9 @@ void cImu::update()
     
     float mx = data.mx,my = data.my,mz = data.mz, Kpm = 0.01;
     
-    cQuaternion s_bm(0,mx,my,mz),s_iH, m_iH(0,1,0,0);
-    s_iH = Q*s_bm*Q.conjugated();    
-    s_iH(2) /= sqrt (s_iH(2)*s_iH(2) + s_iH(3)*s_iH(3) );
-    s_iH(3) /= sqrt (s_iH(2)*s_iH(2) + s_iH(3)*s_iH(3) );     
-    s_iH(4) = 0;    
-    w_delta_magn = Q.conjugated()*(s_iH*m_iH)*Q;
+    cQuaternion q_cross(0,0,0,0);
+	  q_cross(4) = (-2*Q(2)*Q(3) -2*Q(1)*Q(4))*mx - (Q(1)*Q(1) -Q(2)*Q(2) +Q(3)*Q(3) - Q(4)*Q(4))*my + (-2*Q(3)*Q(4) -2*Q(1)*Q(2))*mz;
+    w_delta_magn = Q.conjugated()*q_cross*Q;
   
 
      

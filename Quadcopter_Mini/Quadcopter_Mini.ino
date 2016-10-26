@@ -129,7 +129,7 @@ void loop()
     if (i >= 1000)
     {
       mean_dt /= i;
-      Serial.print(mean_dt, 5);    
+      Serial.println(mean_dt, 5);    
       mean_dt = 0;
       i = 0;
     }
