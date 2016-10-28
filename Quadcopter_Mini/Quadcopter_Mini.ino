@@ -162,6 +162,12 @@ void process_command()
       automatic_lift_I = 0;
     }
 
+    if (command.r >= 50 && command.T >= -50)
+    {
+      gps_global_flag = true;
+      automatic_lift_I = 0;
+    }
+
     /////////////////////////////////////////////////// OFF Command received
     if (command.T <= -100 && command.r <= -100)
     {
@@ -294,7 +300,7 @@ void set_gps_flag()
 void override_pilot_command()
 {
   cVector<3> t, x, xdot, x_cmd;
-  float Kd = 3, Kp = 5 , KI=5;
+  float Kd = 4, Kp = 4, KI=7;
   tCommand command_to_send;
 
   x(1) = Imu.gps_package.delta_NED[0] - Imu.gps_package_from_ground.delta_NED[0];
@@ -324,8 +330,8 @@ void override_pilot_command()
   //command_to_send.T = t_norm - 110;
   command_to_send.T = command.T;
   
-  command_to_send.q_BI_x = (t(2))*(-3);
-  command_to_send.q_BI_y = (t(1))*(3);
+  command_to_send.q_BI_x = (t(2))*(-2);
+  command_to_send.q_BI_y = (t(1))*(2);
   
   
   // Limits for the commands
