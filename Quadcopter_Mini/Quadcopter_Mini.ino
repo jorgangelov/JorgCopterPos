@@ -305,7 +305,7 @@ void override_pilot_command()
   xdot(2) = Imu.gps_package.delta_UVW[1] - Imu.gps_package_from_ground.delta_UVW[1];
   xdot(3) = Imu.gps_package.delta_UVW[2] - Imu.gps_package_from_ground.delta_UVW[2];
 
-  // Hover 3m above ground
+  // Hover 4m above ground
   x_cmd(1) = Imu.gps_package_from_ground.delta_NED[0];
   x_cmd(2) = Imu.gps_package_from_ground.delta_NED[1];
   x_cmd(3) = Imu.gps_package_from_ground.delta_NED[2] + 4;
@@ -321,10 +321,11 @@ void override_pilot_command()
   if (t_norm < 0.01)
   t_norm = 0.01;
   
-  command_to_send.T = t_norm - 110;
+  //command_to_send.T = t_norm - 110;
+  command_to_send.T = command.T;
   
-  command_to_send.q_BI_x = (t(2))*(-5);
-  command_to_send.q_BI_y = (t(1))*(5);
+  command_to_send.q_BI_x = (t(2))*(-3);
+  command_to_send.q_BI_y = (t(1))*(3);
   
   
   // Limits for the commands
