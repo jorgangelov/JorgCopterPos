@@ -164,8 +164,11 @@ void process_command()
 
     if (command.r >= 50 && command.T >= -50)
     {
-      gps_global_flag = true;
-      automatic_lift_I = 0;
+          if (Imu.gps_package.isGPSvalid)
+          {
+          gps_global_flag = true;
+          automatic_lift_I = 0;
+          }
     }
 
     /////////////////////////////////////////////////// OFF Command received
