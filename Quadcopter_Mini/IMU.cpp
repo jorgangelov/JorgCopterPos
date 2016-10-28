@@ -206,7 +206,7 @@ void cImu::update()
     
     // Update ACC
     cQuaternion w_delta(0,0,0,0);
-    float ax = data.ax,ay = data.ay,az = data.az,a, Kp = 0.1, KI=0.0025;
+    float ax = data.ax,ay = data.ay,az = data.az,a, Kp = 0.05, KI=0.000625;
     a = sqrt(ax*ax+ay*ay+az*az);
     if (a > 1 && a < 20)
     {
@@ -225,7 +225,7 @@ void cImu::update()
     cQuaternion w_delta_magn(0,0,0,0);
 
     
-    float Kpm = 0.01;
+    float Kpm = 0.005;
     
     cQuaternion q_cross(0,0,0,0);
 	  q_cross(4) = (-2*Q(2)*Q(3) -2*Q(1)*Q(4))*data.mx - (Q(1)*Q(1) -Q(2)*Q(2) +Q(3)*Q(3) - Q(4)*Q(4))*data.my + (-2*Q(3)*Q(4) -2*Q(1)*Q(2))*data.mz;
