@@ -2,7 +2,6 @@
 #define DEBUG_MODE false
 
 
-int operation_mode = 1;
 bool gps_global_flag = false;
 
 
@@ -18,13 +17,8 @@ tCommand command = {0, 0, 0, 0};
 
 void setup()
 {
-  pinMode(A0, INPUT);
-  digitalWrite(A0, 1);
-  operation_mode = digitalRead(A0);
 
 
-  if (operation_mode == 1)
-  {
     ////// Controller Init
     Controller.begin();
     Controller.armMotors();
@@ -73,24 +67,7 @@ void setup()
     safe_mode();
 
 
-  }
-
-
-  //////////////////////////////////////////////// DEBUG MODE
-  if (operation_mode == 0)
-  {
-    Serial.begin(115200);
-    Serial.println("Setup Mode...");
-    blink(3);
-    while (operation_mode == 0)
-    {
-
-
-
-    }
-
-  }
-  //////////////////////////////////////////////// DEBUG MODE
+  
 
 
 }
@@ -119,6 +96,7 @@ void loop()
   // Control Allocation
   Controller.controlAllocation();
 
+  /////////////////////////////////////////// DEBUG
   if (DEBUG_MODE)
   {
     // Test Speed of Controller
@@ -134,6 +112,7 @@ void loop()
       i = 0;
     }
   }
+  /////////////////////////////////////////// DEBUG
 
 
 }
