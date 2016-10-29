@@ -12,6 +12,20 @@ void blink(int n);
 
 
 
+struct I2C_GPS_Package
+{
+I2C_GPS_Package():isGPSvalid(false)
+  {
+
+  }
+
+float delta_NED[3];
+float delta_UVW[3];
+bool isGPSvalid;
+};
+
+
+
 struct tSensor
 {
   tSensor()
@@ -55,9 +69,13 @@ public:
     cQuaternion w_delta_I;
 
     cQuaternion Q;
+    /*
     cQuaternion Q_IIz;
     cQuaternion Q_IzB;
-    
+    */
+    I2C_GPS_Package gps_package,gps_package_from_ground;
+
+
     float dt;
     cQuaternion q_bs;
     void readData();

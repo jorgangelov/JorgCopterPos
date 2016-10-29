@@ -227,8 +227,10 @@ void cImu::update()
     
     float Kpm = 0.005;
     
-    cQuaternion q_cross(0,0,0,0);
-	  q_cross(4) = (-2*Q(2)*Q(3) -2*Q(1)*Q(4))*data.mx - (Q(1)*Q(1) -Q(2)*Q(2) +Q(3)*Q(3) - Q(4)*Q(4))*data.my + (-2*Q(3)*Q(4) -2*Q(1)*Q(2))*data.mz;
+    cQuaternion m_B(0,data.mx,data.my,data.mz), N_I(0,1,0,0), m_I(0,0,0,0);
+    m_I = Q*m_B*Q.conjugated();
+    m_I(4) = 0;
+    cQuaternion q_cross(0,0,0,-m_I(3));
     w_delta_magn = Q.conjugated()*q_cross*Q;
   
 
@@ -236,6 +238,9 @@ void cImu::update()
     cQuaternion q_delta = (w_bar + w_delta*Kp+w_delta_I*KI + w_delta_magn*Kpm)*0.5*dt;
     q_delta(1) = 1;
     Q = Q*q_delta;
+
+    
+    
     Q.norm();
 
     
