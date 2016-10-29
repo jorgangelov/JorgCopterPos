@@ -6,6 +6,8 @@ void cImu::begin()
 {
   // Wake Up MPU6500
     Wire.begin();
+    Wire.setTimeout(10);
+    
     Wire.beginTransmission(0x68);
     Wire.write(0x6B);
     Wire.write(0);
