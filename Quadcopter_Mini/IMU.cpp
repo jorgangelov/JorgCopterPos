@@ -41,8 +41,8 @@ void cImu::begin()
 
     w_delta_I(1) = 0;
 
-    data.bias_mx = 95;
-    data.bias_my = 15;
+    data.bias_mx = 90;
+    data.bias_my = 0;
     data.bias_mz = -15;
 
 
@@ -208,7 +208,7 @@ void cImu::update()
     
     // Update ACC
     cQuaternion w_delta(0,0,0,0);
-    float ax = data.ax,ay = data.ay,az = data.az,a, Kp = 0.05, KI=0.000625;
+    float ax = data.ax,ay = data.ay,az = data.az,a, Kp = 0.2, KI=0.01;
     a = sqrt(ax*ax+ay*ay+az*az);
     if (a > 1 && a < 20)
     {
@@ -345,7 +345,8 @@ void cImu::magn_calibration()
   float mx_max=-50000,mx_min=50000;
   float my_max=-50000,my_min=50000;
   float mz_max=-50000,mz_min=50000;
-    Serial.println("Calibrating Magnetometer");
+  Serial.begin(115200);
+  Serial.println("Calibrating Magnetometer");
 
   while( (currentTime-start_of_calibration) < calibration_duration)
   {

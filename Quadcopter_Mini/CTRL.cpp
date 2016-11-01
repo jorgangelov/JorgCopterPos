@@ -99,8 +99,7 @@ cQuaternion q_e(1,0,0,0);
 
 // Gains
 float I_enable = 1;
-//float Kp=175, Kd=37, KI=40, Kdd = 3.2;
-float Kp=220, Kd=40, KI=20, Kdd = 3;
+float Kp=220, Kd=40, KI=30, Kdd = 2.5;
 // Gains
 float wdot[3], T;
 const int8_t I_TH = 0;
@@ -112,7 +111,7 @@ q_BIz_d(1) = sqrt(1 - q_BIz_d(2)*q_BIz_d(2) - q_BIz_d(3)*q_BIz_d(3));
 
 
 ////// WDOT
-float wdot_freq = 15, wx_F=0, wy_F=0, wz_F=0, wxdot_F=0, wydot_F=0, wzdot_F=0;
+float wdot_freq = 25, wx_F=0, wy_F=0, wz_F=0, wxdot_F=0, wydot_F=0, wzdot_F=0;
 float K_wdot = 1 + wdot_freq*Imu->dt;
 wx_F = (1/K_wdot)*wx_F_old + (wdot_freq*Imu->dt/K_wdot)*Imu->data.wx;
 wxdot_F = (wx_F-wx_F_old)/Imu->dt;
